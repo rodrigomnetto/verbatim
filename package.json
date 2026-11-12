@@ -1,0 +1,74 @@
+{
+  "name": "verbatim",
+  "version": "0.1.0",
+  "description": "A local English learning workspace",
+  "author": "Verbatim",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "start": "electron .",
+    "build": "tsc -b && vite build",
+    "test": "node --test tests/*.test.cjs",
+    "dist": "npm run build && electron-builder",
+    "setup:transcription": "sh scripts/setup-python.sh && .venv/bin/python -m pip install --cache-dir .cache/pip -r server/requirements.txt",
+    "postinstall": "node scripts/install-electron.cjs",
+    "test:desktop": "npm run build && electron . --smoke-test",
+    "format": "prettier --write src electron scripts tests index.html package.json tsconfig.json vite.config.ts",
+    "test:desktop:dev": "node scripts/dev.mjs --smoke-test"
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "lucide-react": "^0.468.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "~5.7.2",
+    "vite": "^6.4.1",
+    "electron": "^43.0.0",
+    "electron-builder": "^26.0.12",
+    "prettier": "^3.6.2"
+  },
+  "build": {
+    "appId": "com.verbatim.desktop",
+    "productName": "Verbatim",
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "server",
+        "to": "server",
+        "filter": [
+          "transcribe.py",
+          "requirements.txt"
+        ]
+      }
+    ],
+    "mac": {
+      "target": "dmg",
+      "category": "public.app-category.education"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "AppImage",
+      "category": "Education"
+    },
+    "directories": {
+      "output": "release"
+    }
+  },
+  "overrides": {
+    "minimatch@>=7.0.0 <11.0.1": "^11.0.1"
+  }
+}
